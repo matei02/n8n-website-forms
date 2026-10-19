@@ -1,0 +1,371 @@
+{
+  "name": "Website contact form (n8n)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pawpath/contact",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "<URL_1>"
+        }
+      },
+      "id": "33d971fc-d8eb-5d1b-8605-576d19ba1436",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json.email }}",
+        "subject": "Confirmation Email",
+        "message": "=<!DOCTYPE html>\n<html lang=\"en\" style=\"margin:0;padding:0;\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <title>PawPath – Thank You</title>\n  </head>\n  <body style=\"margin:0;padding:0;background-color:#f5f2e9;\">\n    <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-color:#f5f2e9;padding:24px 0;\">\n      <tr>\n        <td align=\"center\">\n          <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"max-width:560px;background-color:#ffffff;border-radius:12px;padding:32px 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#2b2117;line-height:1.6;\">\n            <tr>\n              <td style=\"text-align:left;\">\n                <h1 style=\"margin:0 0 16px;font-size:22px;font-weight:600;color:#2b2117;\">\n                  Hello!\n                </h1>\n\n                <p style=\"margin:0 0 12px;font-size:15px;\">\n                  Thank you for your message. Our team will try to reply within\n                  <strong>24 hours</strong>, but it may take a little longer during\n                  periods of high traffic.\n                </p>\n\n                <p style=\"margin:20px 0 0;font-size:15px;\">\n                  Warm regards,<br />\n                  <strong>The PawPath Team</strong>\n                </p>\n\n                <p style=\"margin:8px 0 0;font-size:14px;\">\n                  <a href=\"<URL_2>\" style=\"color:#a8732f;text-decoration:none;\">\n                    <URL_3>\n                  </a>\n                </p>\n              </td>\n            </tr>\n          </table>\n        </td>\n      </tr>\n    </table>\n  </body>\n</html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a50d9d26-a02c-552b-a247-9fbfd09cb108",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        160
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "<UUID_1>",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "<UUID_2>",
+              "name": "message",
+              "value": "={{ $json.body.message }}",
+              "type": "string"
+            },
+            {
+              "id": "<UUID_3>",
+              "name": "date",
+              "value": "={{ $now.format('yyyy-MM-dd-HH:mm:ss') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5e344c0f-3288-51d3-9f80-14bf0a783bcf",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "<LONG_ID_1>",
+          "mode": "list",
+          "cachedResultName": "PawPath Early Signups",
+          "cachedResultUrl": "<URL_4>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Messages_Received",
+          "cachedResultUrl": "<URL_5>"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Edit Fields').item.json.email }}",
+            "Message": "={{ $('Edit Fields').item.json.message }}",
+            "Date": "={{ $('Edit Fields').item.json.date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "36cf910a-d27a-5068-b597-d2833b737ed0",
+      "name": "Append message",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        160
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "chatId": "={{ \"<PHONE_1>\".trim() }}",
+        "text": "=A new CONTACT message has been received.\n{{ ($('Edit Fields').item.json.email) }} said:\n{{ ($('Edit Fields').item.json.message.slice(0, 150) + \"...\").toJsonString() }}.\n----------------------------------------------------\n<URL_6>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_notification": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "b06aa799-c7f4-5ab4-8a59-e32cdc12804f",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1248,
+        160
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"code\": \"200\",\n  \"message\": \"Your message has been sent. We typically respond within 24h, but it can take more during periods of high traffic.\"\n}",
+        "options": {}
+      },
+      "id": "8e276e62-3e8b-51e2-808f-8f1307993f6d",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1456,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "<LONG_ID_1>",
+          "mode": "list",
+          "cachedResultName": "PawPath Early Signups",
+          "cachedResultUrl": "<URL_4>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Messages_Received",
+          "cachedResultUrl": "<URL_5>"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $('Edit Fields').item.json.email }}"
+            },
+            {
+              "lookupColumn": "Message",
+              "lookupValue": "={{ $('Edit Fields').item.json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2d2ea8e2-d8e5-57aa-85ba-c44fd8d13001",
+      "name": "Append message1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        0
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "<UUID_4>",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "09b5377a-3ac8-5be9-9a4b-7976d4036a76",
+      "name": "Same message from same email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"code\": \"409\",\n  \"message\": \"You have already submitted this message.\"\n}",
+        "options": {}
+      },
+      "id": "93339aca-8270-58f9-ac28-d041a28c3d8e",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        816,
+        -96
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append message": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append message1": {
+      "main": [
+        [
+          {
+            "node": "Same message from same email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Same message from same email?": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

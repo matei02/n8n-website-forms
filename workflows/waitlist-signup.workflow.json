@@ -1,0 +1,416 @@
+{
+  "name": "Waitlist signup form (n8n)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pawpath/signup",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "<URL_1>"
+        }
+      },
+      "id": "33d971fc-d8eb-5d1b-8605-576d19ba1436",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        352,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "<UUID_1>",
+              "leftValue": "={{ $('Check for duplicate').item.json.Email.trim() }}",
+              "rightValue": "={{ $('Webhook').item.json.body.email.trim() }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "<UUID_2>",
+              "leftValue": "={{ $('Check for duplicate').item.json.row_number }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "43b564ef-968a-5dff-881f-af4aea915364",
+      "name": "Email already exists?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "<LONG_ID_1>",
+          "mode": "list",
+          "cachedResultName": "PawPath Early Signups",
+          "cachedResultUrl": "<URL_2>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Emails_Collected",
+          "cachedResultUrl": "<URL_3>"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email",
+              "lookupValue": "={{ $json.body.email.trim() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ac64ef43-021c-56ed-a637-2181d96de8d1",
+      "name": "Check for duplicate",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        576,
+        -32
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"code\": \"409\",\n  \"message\": \"Trying to sign up again? Fortunately, you are already on our waitlist. Keep an eye out on our social channels for more updates!\"\n}",
+        "options": {}
+      },
+      "id": "3922011e-a380-5334-a086-ac7d9cc8163d",
+      "name": "Code 409 conflict",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1024,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ \"<PHONE_1>\".trim() }}",
+        "text": "=A new person has signed up! Total: {{ $json.total }} emails collected.\n\n<URL_4>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_notification": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "b06aa799-c7f4-5ab4-8a59-e32cdc12804f",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1920,
+        64
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "<UUID_3>",
+              "name": "email",
+              "value": "={{ $('Webhook').item.json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "<UUID_4>",
+              "name": "subscription",
+              "value": "={{ $('Webhook').item.json.body.plan }}",
+              "type": "string"
+            },
+            {
+              "id": "<UUID_5>",
+              "name": "date",
+              "value": "={{ $now.format('yyyy-MM-dd-HH:mm:ss') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f45fa704-623d-557b-9058-bebdf6527e6b",
+      "name": "Extract data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        64
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"code\": \"200\",\n  \"message\": \"We are delighted to see you join us. Make sure to stay updated through our social media! Links are below.\"\n}",
+        "options": {}
+      },
+      "id": "5ac28223-6d42-559b-a640-7ccd2ac9f958",
+      "name": "Code 200 success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2144,
+        64
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "<UUID_6>",
+              "name": "total",
+              "value": "={{ $('Get All Signups').all().length.toString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "288207a3-23c6-5df4-8ef1-d341302921dd",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1696,
+        64
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "<LONG_ID_1>",
+          "mode": "list",
+          "cachedResultName": "PawPath Early Signups",
+          "cachedResultUrl": "<URL_2>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Emails_Collected",
+          "cachedResultUrl": "<URL_3>"
+        },
+        "options": {}
+      },
+      "id": "162c58f7-d45a-527b-890c-01c10d37aae1",
+      "name": "Get All Signups",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1472,
+        64
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "<LONG_ID_1>",
+          "mode": "list",
+          "cachedResultName": "PawPath Early Signups",
+          "cachedResultUrl": "<URL_2>"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Emails_Collected",
+          "cachedResultUrl": "<URL_3>"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $json.email }}",
+            "Subscription": "={{ $json.subscription }}",
+            "Date": "={{ $json.date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Subscription",
+              "displayName": "Subscription",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "93ee8740-4e2d-5d1e-ad02-8acea2ee4917",
+      "name": "Append signup",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        64
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check for duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email already exists?": {
+      "main": [
+        [
+          {
+            "node": "Code 409 conflict",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for duplicate": {
+      "main": [
+        [
+          {
+            "node": "Email already exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Code 200 success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract data": {
+      "main": [
+        [
+          {
+            "node": "Append signup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Signups": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append signup": {
+      "main": [
+        [
+          {
+            "node": "Get All Signups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

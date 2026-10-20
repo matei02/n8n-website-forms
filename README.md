@@ -1,6 +1,6 @@
 # Website form automations: waitlist signup and contact form (n8n)
 
-Two n8n workflows behind the buttons of a startup landing page I built during an entrepreneurship minor: one handles **waitlist signups**, the other the **contact form**. Both receive the form as a webhook, block duplicates, store the data in Google Sheets, send a Telegram notification and answer the website with a proper HTTP status and message.
+Two n8n workflows behind the buttons of the landing page I built for PawPath, the dog accessories company we created in an entrepreneurship minor: one handles **waitlist signups**, the other the **contact form**. Both receive the form as a webhook, block duplicates, store the data in Google Sheets, send a Telegram notification and answer the website with a proper HTTP status and message.
 
 ![The two workflows on the n8n canvas: waitlist signup, then contact form](docs/demo.gif)
 
@@ -8,7 +8,7 @@ Two n8n workflows behind the buttons of a startup landing page I built during an
 
 ## The problem
 
-The startup from my entrepreneurship minor (working name "PawPath") had a landing page with a waitlist, where people choose a plan, and a contact form. Both forms post to n8n webhooks: the data lands in a spreadsheet, duplicates are rejected with a clear message, and every new signup or message shows up in a Telegram chat right away.
+In my entrepreneurship minor we had to create a company. We chose dog accessories and called it PawPath. It had a landing page with a waitlist, where people choose a plan, and a contact form. Both forms post to n8n webhooks: the data lands in a spreadsheet, duplicates are rejected with a clear message, and every new signup or message shows up in a Telegram chat right away.
 
 ## What it does
 

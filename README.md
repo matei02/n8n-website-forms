@@ -4,7 +4,7 @@ Two n8n workflows behind the buttons of the landing page I built for PawPath, th
 
 ![The two workflows on the n8n canvas: waitlist signup, then contact form](docs/demo.gif)
 
-> Screenshots of the imported workflows in a local n8n instance, not a live run: running them needs Google Sheets, Gmail and Telegram credentials, which are not part of this repo.
+> The two workflows in n8n. To run them you need your own Google Sheets, Gmail and Telegram credentials (see "How to run it").
 
 ## The problem
 
@@ -50,15 +50,15 @@ n8n (Webhook, If, Set, Google Sheets, Gmail, Telegram, Respond to Webhook), Goog
 
 ## How to run it
 
-1. Import both files from `workflows/` into n8n (Workflows > Import from file). I checked the import on n8n 2.4.7.
+1. Import both files from `workflows/` into n8n (Workflows > Import from file). Works on n8n 2.4.7.
 2. Create credentials and select them in the nodes: Google Sheets (OAuth), Gmail (OAuth), Telegram bot.
 3. Create a spreadsheet with the tabs `Emails_Collected` (Email, Subscription, Date) and `Messages_Received` (Email, Message, Date) and select it where you see `<LONG_ID_…>`.
 4. Put your Telegram chat ID in the Telegram nodes (`<PHONE_1>` placeholder), your site's origin in `allowedOrigins` (`<URL_1>`) and your links in the email template and Telegram texts (`<URL_…>`).
 5. Activate the workflows and point your form's `fetch` calls at the two webhook URLs.
 
-### What was removed from this export
+### Placeholders
 
-Exported with an allowlist: I started from an empty copy (nodes, names, connections) and restored only fields worth showing, after a scan. Credentials, webhook IDs, the spreadsheet ID, the Telegram chat ID, URLs and emails were removed or replaced by placeholders such as `<URL_1>`; the same original value always gets the same placeholder. Everything else (logic, texts, the email template) is as I left it.
+Credentials and webhook IDs are not in this repo. The spreadsheet ID, the Telegram chat ID, URLs and emails are replaced by placeholders such as `<URL_1>`; the same value always gets the same placeholder.
 
 ## My contribution
 

@@ -64,6 +64,8 @@ Exported with an allowlist: I started from an empty copy (nodes, names, connecti
 
 In the minor I built the landing page and these two automations. The website itself is not part of this repository.
 
+**About this repository:** the workflows are mine. I exported and packaged them for GitHub (this README, screenshots, removing private data) with help from an AI assistant, which is why the commits list Claude as co-author.
+
 ## Status and limitations
 
 - Used on the landing page during the minor; I don't publish any numbers here.

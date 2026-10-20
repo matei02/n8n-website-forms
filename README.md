@@ -50,7 +50,7 @@ n8n (Webhook, If, Set, Google Sheets, Gmail, Telegram, Respond to Webhook), Goog
 
 ## How to run it
 
-1. Import both files from `workflows/` into n8n (Workflows > Import from file). Works on n8n 2.4.7.
+1. Import both files from `workflows/` into n8n (Workflows > Import from file). Import tested on n8n 2.4.7.
 2. Create credentials and select them in the nodes: Google Sheets (OAuth), Gmail (OAuth), Telegram bot.
 3. Create a spreadsheet with the tabs `Emails_Collected` (Email, Subscription, Date) and `Messages_Received` (Email, Message, Date) and select it where you see `<LONG_ID_…>`.
 4. Put your Telegram chat ID in the Telegram nodes (`<PHONE_1>` placeholder), your site's origin in `allowedOrigins` (`<URL_1>`) and your links in the email template and Telegram texts (`<URL_…>`).

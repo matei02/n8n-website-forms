@@ -8,7 +8,7 @@ Two n8n workflows behind the buttons of the landing page I built for PawPath, th
 
 ## The problem
 
-In my entrepreneurship minor we had to create a company. We chose dog accessories and called it PawPath. It had a landing page with a waitlist, where people choose a plan, and a contact form. Both forms post to n8n webhooks: the data lands in a spreadsheet, duplicates are rejected with a clear message, and every new signup or message shows up in a Telegram chat right away.
+In my entrepreneurship minor we had to create a company. We chose dog accessories and called it PawPath. It had a landing page, which ran on its own domain during the minor, with a waitlist where people choose a plan, and a contact form. Both forms post to n8n webhooks: the data lands in a spreadsheet, duplicates are rejected with a clear message, and every new signup or message shows up in a Telegram chat right away. Through the site we collected 25 emails on the waitlist.
 
 ## What it does
 
@@ -68,7 +68,7 @@ In the minor I built the landing page and these two automations. The website its
 
 ## Status and limitations
 
-- Used on the landing page during the minor; I don't publish any numbers here.
+- Used on the landing page during the minor (25 waitlist signups).
 - Duplicate checks read the whole sheet through the Sheets API; fine for a waitlist, slow for large volumes, and two identical requests at the same moment can both pass the check.
 - The webhooks have CORS but no rate limiting or captcha, so a script could still flood the sheet.
 - The signup count is computed by reading every row on each signup.
